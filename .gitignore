@@ -1,0 +1,8 @@
+.idea/
+.vscode/
+vendor/
+node_modules/
+MAMP_php_error_log_MAMP
+composer.lock
+.env
+dump.sql

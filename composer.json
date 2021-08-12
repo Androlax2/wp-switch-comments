@@ -1,0 +1,25 @@
+{
+  "name": "antipodes/wp-switch-comments",
+  "authors": [
+    {
+      "name": "Theo",
+      "email": "theo@antipodesmultimedia.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.4.0",
+    "illuminate/support": "^8.51",
+    "symfony/finder": "^5.3",
+    "symfony/console": "^5.3",
+    "vlucas/phpdotenv": "^5.3",
+    "ext-pdo": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Antipodes\\Wordpress\\SwitchComments\\": "src"
+    }
+  },
+  "require-dev": {
+    "symfony/var-dumper": "^5.3"
+  }
+}
