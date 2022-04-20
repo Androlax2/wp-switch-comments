@@ -18,14 +18,14 @@ class SwitchCommentsCommand extends Command
      *
      * @var string
      */
-    protected static string $defaultName = 'wp:switch-comments';
+    protected static $defaultName = 'wp:switch-comments';
 
     /**
      * Description of the command.
      *
      * @var string
      */
-    protected static string $defaultDescription = 'Create an SQL Query to switch comments from a Wordpress database to another Wordpress database mapping the post IDs.';
+    protected static $defaultDescription = 'Create an SQL Query to switch comments from a Wordpress database to another Wordpress database mapping the post IDs.';
 
     /**
      * Last ID generated for the SQL dump.
@@ -88,7 +88,8 @@ class SwitchCommentsCommand extends Command
             $_ENV['DB_NAME'],
             $_ENV['DB_USER'],
             $_ENV['DB_PASSWORD'],
-            $_ENV['DB_HOST']
+            $_ENV['DB_HOST'],
+            $_ENV['DB_WP_PREFIX']
         );
     }
 
@@ -187,11 +188,12 @@ class SwitchCommentsCommand extends Command
      * @param string $dbUser
      * @param string $dbPassword
      * @param string $dbHost
+     * @param string $dbWpPrefix
      *
      * @return Database
      * @throws FileNotFoundException
      */
-    private function getDatabase(string $dbName, string $dbUser, string $dbPassword, string $dbHost): Database
+    private function getDatabase(string $dbName, string $dbUser, string $dbPassword, string $dbHost, string $dbWpPrefix): Database
     {
         $filepath = dirname(__DIR__) . '/config/database.sql';
         if (!file_exists($filepath)) {
@@ -200,6 +202,7 @@ class SwitchCommentsCommand extends Command
 
         return new Database(
             file_get_contents($filepath),
+            $dbWpPrefix,
             "mysql:dbname={$dbName};host={$dbHost}",
             $dbUser,
             $dbPassword,

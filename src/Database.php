@@ -7,12 +7,15 @@ use PDO;
 class Database extends PDO
 {
 
-    public function __construct(string $sqlDump, $dsn, $username = null, $password = null, $options = null)
+    protected string $dbWpPrefix;
+
+    public function __construct(string $sqlDump, string $dbWpPrefix, $dsn, $username = null, $password = null, $options = null)
     {
         parent::__construct($dsn, $username, $password, $options);
         // TODO : Créer backup des databases
         $this->clearDatabase();
         $this->fillDatabase($sqlDump);
+        $this->dbWpPrefix = $dbWpPrefix;
     }
 
     /**
@@ -24,10 +27,10 @@ class Database extends PDO
      */
     public function getComments(array $postIds): array
     {
-        // Récupérer tous les commentaires dans la table 'wp_comments' qui ont le 'comment_post_ID' qui est équivalent à un des ID clé du tableau postIds sans les réponses
+        // Récupérer tous les commentaires dans la table '{$this->$this->dbWpPrefix}]comments' qui ont le 'comment_post_ID' qui est équivalent à un des ID clé du tableau postIds sans les réponses
 
         $ids = implode(',', array_keys($postIds));
-        $commentsStatement = $this->prepare("SELECT * FROM wp_comments WHERE comment_post_ID IN ({$ids}) AND comment_parent = 0");
+        $commentsStatement = $this->prepare("SELECT * FROM {$this->dbWpPrefix}comments WHERE comment_post_ID IN ({$ids}) AND comment_parent = 0");
 
         if (!$commentsStatement->execute()) {
             return [];
@@ -58,7 +61,7 @@ class Database extends PDO
      */
     private function getAnswersOfComment(int $commentId): array
     {
-        $answersStatement = $this->prepare("SELECT * FROM wp_comments WHERE comment_parent = {$commentId}");
+        $answersStatement = $this->prepare("SELECT * FROM {$this->dbWpPrefix}comments WHERE comment_parent = {$commentId}");
 
         if (!$answersStatement->execute()) {
             return [];
@@ -121,7 +124,7 @@ class Database extends PDO
                 'meta_value' => '1',
             ],
         ];
-        $metadatasStatement = $this->prepare("SELECT * FROM wp_commentmeta WHERE comment_id IN ({$commentId})");
+        $metadatasStatement = $this->prepare("SELECT * FROM {$this->dbWpPrefix}commentmeta WHERE comment_id IN ({$commentId})");
 
         if (!$metadatasStatement->execute()) {
             return $metadatas;
