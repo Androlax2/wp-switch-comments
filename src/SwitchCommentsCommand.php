@@ -72,6 +72,8 @@ class SwitchCommentsCommand extends Command
      */
     private array $authors;
 
+    private string $newDbPrefix;
+
     /**
      * @throws FileNotFoundException
      */
@@ -89,8 +91,9 @@ class SwitchCommentsCommand extends Command
             $_ENV['DB_USER'],
             $_ENV['DB_PASSWORD'],
             $_ENV['DB_HOST'],
-            $_ENV['DB_WP_PREFIX']
+            $_ENV['DB_WP_PREFIX'],
         );
+        $this->newDbPrefix = $_ENV['DB_NEW_WP_PREFIX'] ?: 'wp_';
     }
 
     protected function configure(): void
@@ -131,7 +134,7 @@ class SwitchCommentsCommand extends Command
             $comments = $this->replaceAuthor($newAuthor, $comments);
         }
 
-        $this->generateSqlDump($this->prepareSqlDump($comments, (int) $input->getArgument('last-comment-id')));
+        $this->generateSqlDump($this->prepareSqlDump($comments, (int) $input->getArgument('last-comment-id')), "{$this->newDbPrefix}comments");
 
         return Command::SUCCESS;
     }
@@ -282,7 +285,7 @@ class SwitchCommentsCommand extends Command
      * @param array  $comments
      * @param string $table Table to insert in.
      */
-    private function generateSqlDump(array $comments, string $table = 'wp_comments'): void
+    private function generateSqlDump(array $comments, string $table): void
     {
         if (!self::$sqlDumpCreated && file_exists('dump.sql')) {
             unlink('dump.sql');
@@ -293,10 +296,10 @@ class SwitchCommentsCommand extends Command
         foreach ($comments as $comment) {
             if (isset($comment['WP_SWITCH_COMMENTS'])) {
                 if (isset($comment['WP_SWITCH_COMMENTS']['answers'])) {
-                    $this->generateSqlDump($comment['WP_SWITCH_COMMENTS']['answers']);
+                    $this->generateSqlDump($comment['WP_SWITCH_COMMENTS']['answers'], $table);
                 }
                 if (isset($comment['WP_SWITCH_COMMENTS']['metadatas'])) {
-                    $this->generateSqlDump($comment['WP_SWITCH_COMMENTS']['metadatas'], 'wp_commentmeta');
+                    $this->generateSqlDump($comment['WP_SWITCH_COMMENTS']['metadatas'], "{$this->newDbPrefix}commentmeta");
                 }
                 unset($comment['WP_SWITCH_COMMENTS']);
             }
