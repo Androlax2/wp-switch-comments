@@ -5,7 +5,7 @@
     - **ATTENTION**, cette base de données doit être une base de données avec rien dedans, elle sert juste à faire des requêtes. Elle sera
       vidé à chaque lancement de commande.
 - Lancer `composer install`
-- Créer un fichier `config/database.sql` contenant le dump SQL de la base de donnée de l'ancien Wordpress
+- Créer un fichier `config/database.sql` contenant le dump SQL de la base de donnée de l'ancien Wordpress (⚠️ NE PRENDRE QUE LES TABLES `wp_comments` et `wp_commentmeta` ⚠️)
 - Remplir le fichier `config/post-ids.php`
     - C'est un tableau qui contient une `clé` et une `valeur`, il permet de changer l'ID de l'ancien Wordpress pour le mettre sur le nouveau
       Wordpress
